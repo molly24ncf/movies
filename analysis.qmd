@@ -11,3 +11,53 @@ execute:
 library(tidyverse)
 movies <- read_csv("data/movies.csv")
 ```
+
+```{r}
+glimpse(movies)
+names(movies)
+```
+
+```{r}
+movies |>
+  summarise(across(everything(), ~ sum(is.na(.x)))) |>
+  pivot_longer(everything(), names_to = "column", values_to = "n_missing")
+```
+
+```{r}
+movies |>
+  filter(!is.na(boxOffice)) |>
+  select(title, boxOffice) |>
+  slice_head(n = 10)
+```
+
+```{r}
+#| cache: true
+movies_clean <- movies |>
+  separate_longer_delim(genre, delim = ", ") |>
+  mutate(genre = str_trim(genre))
+```
+
+```{r}
+movies_clean |>
+  count(genre, sort = TRUE)
+```
+
+```{r}
+movies |>
+  summarise(
+    mean_audience_score = mean(audienceScore, na.rm = TRUE),
+    mean_tomato_meter = mean(tomatoMeter, na.rm = TRUE)
+  )
+```
+
+```{r}
+movies |>
+  ggplot(aes(x = tomatoMeter)) +
+  geom_histogram(binwidth = 5, color = "white") +
+  labs(
+    x = "Tomatometer Score",
+    y = "Count",
+    title = "Distribution of Tomatometer Scores"
+  ) +
+  theme_minimal()
+```
